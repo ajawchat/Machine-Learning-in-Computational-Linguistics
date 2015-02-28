@@ -2,11 +2,28 @@
 
 import xml.etree.ElementTree as ET
 
+
+##============================
+
+def writeToNewFile(slicedData):
+    outputFile = open("a3.train","w")
+
+    for element in slicedData:
+        length = len(element)
+        print element
+        line = element[length-1]["w-2"]+" "+element[length-1]["w-1"]+" "+element[length-1]["w+1"]+" "+element[length-1]["w+2"]+" "+element[length-1]["w-2w-1"]+" "+element[length-1]["w-1w+1"]+" "+element[length-1]["w+1w+2"]+" "+element[1]
+        #print line
+        outputFile.write(line)
+        outputFile.write("\n")
+
+    outputFile.close()
+
 ##===============================================
 
 def removePunctuations(strList):
     punctuation = [".",")","(","","-"]
-    newList = [item for item in strList if item not in punctuation]
+    # convert each string to lowercase, for better matching
+    newList = [item.lower() for item in strList if item not in punctuation]
     return newList
 
 ##===============================================
@@ -33,9 +50,9 @@ def extractFeatures(context):
     featureSet["w-1"] = newpart1[-1]
     featureSet["w+1"] = newpart2[0]
     featureSet["w+2"] = newpart1[1]
-    featureSet["w-2w-1"] = newpart1[-2]+newpart1[-1]
-    featureSet["w-1w+1"] = newpart1[-1]+newpart2[0]
-    featureSet["w+1w+2"] = newpart2[0]+newpart2[1]
+    featureSet["w-2w-1"] = "<"+newpart1[-2]+","+newpart1[-1]+">"
+    featureSet["w-1w+1"] = "<"+newpart1[-1]+","+newpart2[0]+">"
+    featureSet["w+1w+2"] = "<"+newpart2[0]+","+newpart2[1]+">"
     
     return featureSet
     
@@ -105,11 +122,7 @@ if __name__ == "__main__":
     writeToNewFile(xmlSlicedData)
 
 
-##============================
 
-def writeToNewFile(xmlSlicedData):
-    outputFile = open("a3.train","w")
-     
     
     
     
