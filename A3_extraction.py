@@ -45,7 +45,9 @@ def extractFeatures(context):
 
     # Create a new dictionary and enter the features
     featureSet = {}
-
+    print newpart1
+    print "\n"
+    print newpart2
     featureSet["w-2"] = newpart1[-2]
     featureSet["w-1"] = newpart1[-1]
     featureSet["w+1"] = newpart2[0]
@@ -62,7 +64,7 @@ def extractFeatures(context):
 
 if __name__ == "__main__":
 
-    document = "ajTrain.train"
+    document = "EnglishLS.train"
 
     fileOpen = open(document,"r")
 
@@ -72,7 +74,7 @@ if __name__ == "__main__":
     
     for line in fileOpen:
         #print line
-        if "activate.v" in line:
+        if ("arm.n" in line) or ("difficulty.n" in line) or ("interest.n" in line) :
             #print "activated"
             flag = True
         if flag == True:
@@ -109,13 +111,19 @@ if __name__ == "__main__":
                 elif sub.tag == "answer":
                     xmlElem.append(sub.attrib["senseid"])
                 elif sub.tag == "context":
-                    xmlElem.append(extractFeatures(sub.text))
+                    if sub.text.count("$$head$$") > 2:
+                        index1 = sub.text.index("$$head$$")
+                        index2 = sub.text.replace('$$head$$', 'XXX', 1).find('$$head$$')
+                        context = sub.text[0:index1-1] + sub.text[index1+8:index2] + sub.text[index2+8:]
+                        xmlElem.append(extractFeatures(context))
+                    else:
+                        xmlElem.append(extractFeatures(sub.text))
                 
             xmlSlicedData.append(xmlElem)
 
     
-    print xmlSlicedData[0]
-    print xmlSlicedData[1]
+    #print xmlSlicedData[0]
+    #print xmlSlicedData[1]
 
     # Extract the features
 
