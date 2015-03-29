@@ -128,6 +128,12 @@ if __name__ == "__main__":
                     xmlElem.append(sub.attrib["id"])
                 elif sub.tag == "answer":
                     xmlElem.append(sub.attrib["senseid"])
+                    
+                    #mapping the ids to numbers, if required at all    
+                    if id_mapping.get(sub.attrib["senseid"],"NA") == "NA":
+                        id_mapping[sub.attrib["senseid"]] = cntr_id + 1
+                        cntr_id += 1
+                        
                 elif sub.tag == "context":
                     if sub.text.count("$$head$$") > 2:
                         index1 = sub.text.index("$$head$$")
@@ -143,7 +149,8 @@ if __name__ == "__main__":
     print xmlSlicedData,"\n\n\n"
 
     # Extract the features
-
+    print id_mapping
+    
     writeToNewFile(xmlSlicedData)
 
 
