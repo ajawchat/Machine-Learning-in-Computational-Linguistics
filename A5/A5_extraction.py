@@ -12,16 +12,16 @@ cntr_id = 0
 ##===============================================
 
 def writeToNewFile(slicedData):
-    outputFile = open("a3.train","w")
+    outputFile = open("arm.train","w")
 
     print bag_of_words
 
     for element in slicedData:
         length = len(element)
         print element
-        line = element[1]
+        line = str(element[1])
         for item in element[len(element)-1]:
-            line += " "+str(bag_of_words[item])+":1"
+            line += " "+str(item)+":1"
         
         print line
         outputFile.write(line)
@@ -54,26 +54,38 @@ def extractFeatures(context):
     # We keep commas as suggested by Professor
     newpart1 = removePunctuations(part1)
     newpart2 = removePunctuations(part2)
-
+    
+    print newpart1
+    print newpart2
+    result = []
+    
     # Enter into the appropriate dictionaries
     if bag_of_words.get(newpart1[-2],"NA") == "NA":
         bag_of_words[newpart1[-2]] = cntr_words + 1
         cntr_words +=1
+        result.append(bag_of_words[newpart1[-2]])
         
 
     if bag_of_words.get(newpart1[-1],"NA") == "NA":
         bag_of_words[newpart1[-1]] = cntr_words + 1
         cntr_words +=1
+        result.append(bag_of_words[newpart1[-1]])
+
 
     if bag_of_words.get(newpart2[0],"NA") == "NA":
         bag_of_words[newpart2[0]] = cntr_words + 1
         cntr_words +=1
+        result.append(bag_of_words[newpart2[0]])
 
-    if bag_of_words.get(newpart2[1],"NA") == "NA":
+    	
+    if len(newpart2) > 2 and bag_of_words.get(newpart2[1],"NA") == "NA":
         bag_of_words[newpart2[1]] = cntr_words + 1
         cntr_words +=1
+        result.append(bag_of_words[newpart2[1]])
 
-    return [newpart1[-2],newpart1[-1],newpart2[0],newpart2[1]]
+            
+
+    return sorted(result)
     
     
 
@@ -127,18 +139,18 @@ if __name__ == "__main__":
                 if sub.tag == "instance":
                     xmlElem.append(sub.attrib["id"])
                 elif sub.tag == "answer":
-                    xmlElem.append(sub.attrib["senseid"])
                     
                     #mapping the ids to numbers, if required at all    
                     if id_mapping.get(sub.attrib["senseid"],"NA") == "NA":
-                        id_mapping[sub.attrib["senseid"]] = cntr_id + 1
+                        id_mapping[sub.attrib["senseid"]] = cntr_id
                         cntr_id += 1
+                    xmlElem.append(id_mapping[sub.attrib["senseid"]])
                         
                 elif sub.tag == "context":
                     if sub.text.count("$$head$$") > 2:
                         index1 = sub.text.index("$$head$$")
                         index2 = sub.text.replace('$$head$$', 'XXX', 1).find('$$head$$')
-                        context = sub.text[0:index1-1] + sub.text[index+8:index2] + sub.text[index2+8:]
+                        context = sub.text[0:index1-1] + sub.text[index1+8:index2] + sub.text[index2+8:]
                         xmlElem.append(extractFeatures(sub.text))
                     else:
                         xmlElem.append(extractFeatures(sub.text))
@@ -146,10 +158,10 @@ if __name__ == "__main__":
             xmlSlicedData.append(xmlElem)
 
     
-    print xmlSlicedData,"\n\n\n"
+    #print xmlSlicedData,"\n\n\n"
 
     # Extract the features
-    print id_mapping
+    #print id_mapping
     
     writeToNewFile(xmlSlicedData)
 

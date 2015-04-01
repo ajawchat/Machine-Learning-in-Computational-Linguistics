@@ -13,7 +13,7 @@ cntr_id = 0
 ##============================
 
 def writeToNewFile(slicedData):
-    global keyMap
+    global keyMap, id_mapping, cntr_id
     
     outputFile = open("a3.test","w")
 
@@ -22,13 +22,18 @@ def writeToNewFile(slicedData):
         print element
         line = ""
         for item in element[len(element)-1]:
-            line += " "+str(bag_of_words[item])+":1"
+            line += " "+str(item)+":1"
             
         #Access the senseID from the keyMap and attach it here
         senseID = keyMap[element[0]]
+        for senses in senseID:
+            if id_mapping.get(senses,"NA") == "NA":
+                id_mapping[senses] = cntr_id
+                cntr_id += 1
+                
 
         for sense in senseID:
-            outputFile.write(sense+line)
+            outputFile.write(str(id_mapping[sense])+line)
             outputFile.write("\n")
        
     outputFile.close()
@@ -78,7 +83,7 @@ def extractFeatures(context):
         bag_of_words[newpart2[1]] = cntr_words + 1
         cntr_words +=1
 
-    return [newpart1[-2],newpart1[-1],newpart2[0],newpart2[1]]
+    return sorted([bag_of_words[newpart1[-2]],bag_of_words[newpart1[-1]],bag_of_words[newpart2[0]],bag_of_words[newpart2[1]]])
     
 ##===============================================
 
