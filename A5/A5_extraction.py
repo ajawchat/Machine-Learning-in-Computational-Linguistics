@@ -14,11 +14,16 @@ cntr_id = 0
 def writeToNewFile(slicedData):
     outputFile = open("a3.train","w")
 
+    print bag_of_words
+
     for element in slicedData:
         length = len(element)
         print element
-        line = element[length-1]["w-2"]+" "+element[length-1]["w-1"]+" "+element[length-1]["w+1"]+" "+element[length-1]["w+2"]+" "+element[length-1]["w-2w-1"]+" "+element[length-1]["w-1w+1"]+" "+element[length-1]["w+1w+2"]+" "+element[1]
-        #print line
+        line = element[1]
+        for item in element[len(element)-1]:
+            line += " "+str(bag_of_words[item])+":1"
+        
+        print line
         outputFile.write(line)
         outputFile.write("\n")
 
@@ -68,6 +73,7 @@ def extractFeatures(context):
         bag_of_words[newpart2[1]] = cntr_words + 1
         cntr_words +=1
 
+    return [newpart1[-2],newpart1[-1],newpart2[0],newpart2[1]]
     
     
 
@@ -127,21 +133,18 @@ if __name__ == "__main__":
                         index1 = sub.text.index("$$head$$")
                         index2 = sub.text.replace('$$head$$', 'XXX', 1).find('$$head$$')
                         context = sub.text[0:index1-1] + sub.text[index+8:index2] + sub.text[index2+8:]
-                        extractFeatures(sub.text)
+                        xmlElem.append(extractFeatures(sub.text))
                     else:
-                        extractFeatures(sub.text)
+                        xmlElem.append(extractFeatures(sub.text))
                 
             xmlSlicedData.append(xmlElem)
 
     
     print xmlSlicedData,"\n\n\n"
 
-    print bag_of_words
-    print len(bag_of_words.keys())
-
     # Extract the features
 
-    #writeToNewFile(xmlSlicedData)
+    writeToNewFile(xmlSlicedData)
 
 
 
